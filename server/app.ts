@@ -1,19 +1,51 @@
-// app.ts
+import 'reflect-metadata'
 import express, { Request, Response } from 'express'
+import { MongoConnectionOptions } from 'typeorm/driver/mongodb/MongoConnectionOptions'
+import { createConnection } from 'typeorm'
+import { graphqlHTTP } from 'express-graphql'
+import { GraphQLSchema } from 'graphql'
+import cors from 'cors'
+import { buildSchema } from 'type-graphql'
 
-// APP SETUP
+import { RoutineResolver } from './resolvers/RoutineResolver'
+import { connection } from './mongo-connection'
+
 const app = express(),
   port = process.env.PORT || 3000
 
+app.use(cors())
+
 // MIDDLEWARE
 app.use(express.json()) // for parsing application/json
+;(async () => {
+  // All our code
+  // APP SETUP
+  await createConnection(connection)
 
-// ROUTES
-app.get('/', (request: Request, response: Response) => {
-  response.send(`Welcome, just know: you matter!`)
-})
+  /**
+   *
+   * @description create the graphql schema with the imported resolvers
+   */
+  let schema: GraphQLSchema = {} as GraphQLSchema
 
-// APP START
-app.listen(port, () => {
-  console.info(`\nServer 👾 \nListening on http://localhost:${port}/`)
-})
+  await buildSchema({
+    resolvers: [RoutineResolver],
+  }).then((_: any) => {
+    schema = _
+  })
+
+  // GraphQL init middleware
+  app.use(
+    '/v1/', // Url, do you want to keep track of a version?
+    graphqlHTTP((request, response) => ({
+      schema: schema,
+      context: { request, response },
+      graphiql: true,
+    })),
+  )
+
+  // APP START -> also covered in basic Express part
+  app.listen(port, () => {
+    console.info(`\nWelcome 👋\nGraphQL server @ http://localhost:${port}/v1\n`)
+  })
+})()
