@@ -10,6 +10,7 @@ import { buildSchema } from 'type-graphql'
 import { RoutineResolver } from './resolvers/RoutineResolver'
 import { connection } from './mongo-connection'
 import { TodoResolver } from './resolvers/TodoResolver'
+import { UserResolver } from './resolvers/UserResolver'
 
 const app = express(),
   port = process.env.PORT || 3000
@@ -30,7 +31,7 @@ app.use(express.json()) // for parsing application/json
   let schema: GraphQLSchema = {} as GraphQLSchema
 
   await buildSchema({
-    resolvers: [RoutineResolver, TodoResolver],
+    resolvers: [RoutineResolver, TodoResolver, UserResolver],
   }).then((_: any) => {
     schema = _
   })
