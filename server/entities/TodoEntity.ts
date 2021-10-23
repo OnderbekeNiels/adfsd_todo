@@ -9,9 +9,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 @ObjectType()
-@InputType('RoutinesInput')
-@Entity('Routines')
-export class Routine extends BaseEntity {
+@InputType('TodosInput')
+@Entity('Todos')
+export class Todo extends BaseEntity {
   @Field(() => ID, { nullable: true }) //Field decorator, represent a Graphql field of our graphql object type
   @ObjectIdColumn() //Special decorator, to tell that this collumn represent an unique generated ID
   id?: ObjectID
@@ -20,7 +20,13 @@ export class Routine extends BaseEntity {
   title!: string
   @Field()
   @Column()
-  numberOfTodos?: number
+  routineId?: string
+  @Field()
+  @Column()
+  color!: string
+  @Field()
+  @Column()
+  icon!: string
   @Field({ nullable: true })
   @CreateDateColumn({ type: 'timestamp', nullable: true })
   createdAt?: Date
@@ -29,7 +35,6 @@ export class Routine extends BaseEntity {
   updatedAt?: Date
 }
 
-@InputType('CreateRoutinesInput')
-@Entity('Routines')
-export class CreateRoutinesInput extends Routine {
-}
+@InputType('CreateTodosInput')
+@Entity('Todos')
+export class CreateTodosInput extends Todo {}

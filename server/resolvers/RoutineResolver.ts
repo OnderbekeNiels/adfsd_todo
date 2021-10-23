@@ -1,6 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { getMongoManager, MongoEntityManager, ObjectID } from 'typeorm'
-import { Routine } from '../entities/RoutineEntity'
+import { CreateRoutinesInput, Routine } from '../entities/RoutineEntity'
 
 @Resolver()
 export class RoutineResolver {
@@ -8,7 +8,7 @@ export class RoutineResolver {
 
   @Query(() => [Routine], { nullable: true })
   async getRoutines(): Promise<Routine[]> {
-    return await this.manager.find<Routine>(Routine);
+    return await this.manager.find<Routine>(Routine)
   }
 
   @Query(() => Routine, { nullable: true })
@@ -19,58 +19,58 @@ export class RoutineResolver {
     return res
   }
 
-//   @Mutation(() => Course, { nullable: true })
-//   async createCourse(
-//     @Arg('data') newCourseData: CreateCoursesInput,
-//   ): Promise<Course | undefined | null> {
-//     console.log(newCourseData)
+  @Mutation(() => Routine, { nullable: true })
+  async createRoutine(
+    @Arg('data') newRoutineData: CreateRoutinesInput,
+  ): Promise<Routine | undefined | null> {
+    console.log(newRoutineData)
 
-//     const result = await this.manager
-//       .save<Course>(newCourseData)
-//       .catch(ex => console.log(ex))
-//     if (result) {
-//       return result
-//     } else {
-//       return undefined
-//     }
-//   }
+    const result = await this.manager
+      .save<Routine>(newRoutineData)
+      .catch(ex => console.log(ex))
+    if (result) {
+      return result
+    } else {
+      return undefined
+    }
+  }
 
-//   @Mutation(() => Course)
-//   async updateCourse(
-//     @Arg('id') id: string,
-//     @Arg('data') myUpdateCourse: Course,
-//   ): Promise<Course> {
-//     try {
-//       const myCourse: Course | undefined = await this.manager.findOne(
-//         Course,
-//         id,
-//       )
+  @Mutation(() => Routine)
+  async updateRoutine(
+    @Arg('id') id: string,
+    @Arg('data') myUpdateRoutine: Routine,
+  ): Promise<Routine> {
+    try {
+      const myRoutine: Routine | undefined = await this.manager.findOne(
+        Routine,
+        id,
+      )
 
-//       if (myCourse) {
-//         myUpdateCourse.updatedAt = new Date()
-//         await this.manager.update<Course>(Course, id, myUpdateCourse)
-//         const rnaupdate = await this.manager.findOne<Course>(Course, id)
-//         return rnaupdate
-//       }
-//     } catch (error) {
-//       throw new Error(`Update of the Course with id ${id} failed.` + error)
-//     }
-//   }
+      if (myRoutine) {
+        myUpdateRoutine.updatedAt = new Date()
+        await this.manager.update<Routine>(Routine, id, myUpdateRoutine)
+        const rnaupdate = await this.manager.findOne<Routine>(Routine, id)
+        return rnaupdate
+      }
+    } catch (error) {
+      throw new Error(`Update of the Routine with id ${id} failed.` + error)
+    }
+  }
 
-//   @Mutation(() => String)
-//   async deleteCourse(@Arg('id') id: string): Promise<string> {
-//     try {
-//       const myCourse: Course | undefined = await this.manager.findOne(
-//         Course,
-//         id,
-//       )
+  @Mutation(() => String)
+  async deleteRoutine(@Arg('id') id: string): Promise<string> {
+    try {
+      const myRoutine: Routine | undefined = await this.manager.findOne(
+        Routine,
+        id,
+      )
 
-//       if (myCourse) {
-//         await this.manager.delete(Course, id)
-//         return id
-//       }
-//     } catch (error) {
-//       throw new Error(`Failed to delete todo with id ${id}.` + error)
-//     }
-//   }
+      if (myRoutine) {
+        await this.manager.delete(Routine, id)
+        return id
+      }
+    } catch (error) {
+      throw new Error(`Failed to delete Routine with id ${id}.` + error)
+    }
+  }
 }
