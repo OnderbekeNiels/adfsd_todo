@@ -35,11 +35,11 @@ export class RoutineResolver {
     }
   }
 
-  @Mutation(() => Routine)
+  @Mutation(() => Boolean)
   async updateRoutine(
     @Arg('id') id: string,
     @Arg('data') myUpdateRoutine: Routine,
-  ): Promise<Routine> {
+  ): Promise<Boolean> {
     try {
       const myRoutine: Routine | undefined = await this.manager.findOne(
         Routine,
@@ -50,7 +50,10 @@ export class RoutineResolver {
         myUpdateRoutine.updatedAt = new Date()
         await this.manager.update<Routine>(Routine, id, myUpdateRoutine)
         const rnaupdate = await this.manager.findOne<Routine>(Routine, id)
-        return rnaupdate
+        return true
+      }
+      else{
+        return false
       }
     } catch (error) {
       throw new Error(`Update of the Routine with id ${id} failed.` + error)
@@ -68,6 +71,8 @@ export class RoutineResolver {
       if (myRoutine) {
         await this.manager.delete(Routine, id)
         return id
+      } else {
+        throw new Error(`Failed to delete Routine with id ${id}.`)
       }
     } catch (error) {
       throw new Error(`Failed to delete Routine with id ${id}.` + error)

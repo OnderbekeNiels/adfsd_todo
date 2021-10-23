@@ -37,6 +37,7 @@ export class TodoResolver {
 
       if (myRoutine) {
         myRoutine.numberOfTodos += 1
+        myRoutine.updatedAt = new Date()
         await this.manager.update<Routine>(
           Routine,
           newTodoData.routineId,
@@ -53,11 +54,11 @@ export class TodoResolver {
     }
   }
 
-  @Mutation(() => Todo)
+  @Mutation(() => Boolean)
   async updateTodo(
     @Arg('id') id: string,
     @Arg('data') myUpdateTodo: Todo,
-  ): Promise<Todo> {
+  ): Promise<Boolean> {
     try {
       const myTodo: Todo | undefined = await this.manager.findOne(Todo, id)
 
@@ -65,7 +66,10 @@ export class TodoResolver {
         myUpdateTodo.updatedAt = new Date()
         await this.manager.update<Todo>(Todo, id, myUpdateTodo)
         const rnaupdate = await this.manager.findOne<Todo>(Todo, id)
-        return rnaupdate
+        return true
+      }
+      else{
+          return false
       }
     } catch (error) {
       throw new Error(`Update of the Todo with id ${id} failed.` + error)
@@ -95,6 +99,8 @@ export class TodoResolver {
           )
         }
         return id
+      } else {
+        throw new Error(`Failed to delete Todo with id ${id}.`)
       }
     } catch (error) {
       throw new Error(`Failed to delete Todo with id ${id}.` + error)
